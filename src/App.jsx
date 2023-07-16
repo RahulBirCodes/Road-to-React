@@ -3,6 +3,8 @@ import {useState} from "react";
 
 /* eslint-disable */
 
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+
 const App = () => {
   const initialStories = [
       {
@@ -80,13 +82,13 @@ const App = () => {
 
   React.useEffect(() => {
     dispatchStories({type: storyReducerActionTypes.STORIES_FETCH_INIT});
-    getAsyncData()
-      .then(result => {
+    fetch(`${API_ENDPOINT}React`)
+      .then(res => res.json())
+      .then(data => {
         dispatchStories({
           type: storyReducerActionTypes.STORIES_FETCH_SUCCESS,
-          payload: result.data.stories,
+          payload: data.hits,
         });
-        setIsLoading(false);
       })
       .catch(() => dispatchStories({type: storyReducerActionTypes.STORIES_FETCH_FAILURE}));
   }, []);
