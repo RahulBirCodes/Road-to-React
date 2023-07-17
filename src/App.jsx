@@ -78,23 +78,24 @@ const App = () => {
     return [value, setValue];
   };
 
-  const [fluctuatingSearchTerm, setFluctuatingSearchTerm] = useState('');
-  const [searchTerm, setSearchTerm] = useStorageState('search', '');
+  const [fluctuatingSearchTerm, setFluctuatingSearchTerm] = useStorageState('Search', '');
+  const [url, setUrl] = React.useState(`${API_ENDPOINT}${fluctuatingSearchTerm}`);
 
-  const handleFetchStories = React.useCallback(() => {
-    if (!searchTerm) return;
-
+  const handleFetchStories = React.useCallback(async () => {
+    if (!fluctuatingSearchTerm) return;
     dispatchStories({type: storyReducerActionTypes.STORIES_FETCH_INIT});
-    fetch(`${API_ENDPOINT}${searchTerm}`)
-      .then(res => res.json())
-      .then(data => {
-        dispatchStories({
-          type: storyReducerActionTypes.STORIES_FETCH_SUCCESS,
-          payload: data.hits,
-        });
-      })
-      .catch(() => dispatchStories({type: storyReducerActionTypes.STORIES_FETCH_FAILURE}));
-  }, [searchTerm]);
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      dispatchStories({
+        type: storyReducerActionTypes.STORIES_FETCH_SUCCESS,
+        payload: data.hits,
+      });
+    } catch (e) {
+      dispatchStories({type: storyReducerActionTypes.STORIES_FETCH_FAILURE});
+    }
+  }, [url]);
 
   React.useEffect(() => {
     handleFetchStories();
@@ -112,7 +113,7 @@ const App = () => {
   };
 
   const handleSubmit = () => {
-    setSearchTerm(fluctuatingSearchTerm);
+    setUrl(`${API_ENDPOINT}${fluctuatingSearchTerm}`);
   }
 
   return (
