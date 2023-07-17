@@ -78,6 +78,7 @@ const App = () => {
     return [value, setValue];
   };
 
+  const [fluctuatingSearchTerm, setFluctuatingSearchTerm] = useState('');
   const [searchTerm, setSearchTerm] = useStorageState('search', '');
 
   const handleFetchStories = React.useCallback(() => {
@@ -107,19 +108,25 @@ const App = () => {
   };
 
   const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
+    setFluctuatingSearchTerm(event.target.value);
   };
+
+  const handleSubmit = () => {
+    setSearchTerm(fluctuatingSearchTerm);
+  }
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
 
       <InputWithLabel id="search"
-                      value={searchTerm}
+                      value={fluctuatingSearchTerm}
                       onInputChange={handleSearch}
                       isFocused>
         <strong>Search:</strong>
       </InputWithLabel>
+      &nbsp;
+      <button type="button" disabled={!fluctuatingSearchTerm} onClick={handleSubmit}>Search</button>
 
       <hr/>
 
